@@ -1,0 +1,21 @@
+package ${package}.${moduleName}.domain.factory;
+
+
+import ${package}.${moduleName}.domain.model.entity.${className};
+import org.springframework.stereotype.Component;
+
+/**
+ * ${comments}Factory
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+@Component
+public class ${className}Factory {
+
+	public ${className} create${className}() {
+		return new ${className}();
+	}
+
+}

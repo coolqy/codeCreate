@@ -1,0 +1,45 @@
+package ${package}.${moduleName}.domain.repository;
+
+import ${package}.${moduleName}.domain.model.entity.${className};
+import ${package}.${moduleName}.domain.model.types.${className}Id;
+
+import java.util.List;
+
+/**
+ * ${comments}Repository
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+public interface ${className}Repository {
+
+    /**
+     * 通过ID获取${comments}
+     *
+     * @param id
+     * @return
+     */
+        ${className} find(${className}Id id);
+
+    /**
+     * 保存
+     *
+     * @param ${pathName}
+     */
+    void store(${className} ${pathName});
+
+    /**
+     * 更新
+     *
+     * @param ${pathName}
+     */
+    void update(${className} ${pathName});
+
+    /**
+     * 删除
+     *
+     * @param ids
+     */
+    void delete(List<${className}Id> ids);
+}

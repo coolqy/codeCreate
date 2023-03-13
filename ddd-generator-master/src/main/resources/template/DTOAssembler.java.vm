@@ -1,0 +1,37 @@
+package ${package}.${moduleName}.interfaces.facade.assembler;
+
+
+import org.apache.commons.lang.StringUtils;
+import ${package}.${moduleName}.domain.model.entity.${className};
+import ${package}.${moduleName}.domain.model.types.${className}Id;
+import ${package}.${moduleName}.interfaces.facade.dto.${className}DTO;
+import org.springframework.beans.BeanUtils;
+import ${package}.${moduleName}.domain.shared.StatusEnum;
+
+
+/**
+ * ${comments}Assembler
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+public class ${className}DTOAssembler {
+
+    public static ${className} to${className}(final ${className}DTO ${pathName}DTO) {
+        ${className}Id ${pathName}Id = StringUtils.isEmpty(${pathName}DTO.getId()) ? null : new ${className}Id(${pathName}DTO.getId());
+        ${className} ${pathName} =new ${className}();
+        BeanUtils.copyProperties(${pathName}DTO, ${pathName});
+        ${pathName}.setId(${pathName}Id);
+        ${pathName}.setStatus(StatusEnum.getStatusEnum(${pathName}DTO.getStatus()));
+        return ${pathName};
+    }
+
+    public static ${className}DTO from${className}(final ${className} ${pathName}) {
+        ${className}DTO ${pathName}DTO = new ${className}DTO();
+        BeanUtils.copyProperties(${pathName}, ${pathName}DTO);
+        ${pathName}DTO.setId(${pathName}.getId().getId());
+        ${pathName}DTO.setStatus(${pathName}.getStatus().getValue());
+        return ${pathName}DTO;
+    }
+}

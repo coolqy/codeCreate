@@ -1,0 +1,23 @@
+package ${package}.${moduleName}.interfaces.facade;
+
+
+import ${package}.${moduleName}.interfaces.web.command.${className}AllCommand;
+
+/**
+ * ${comments}AllFacade
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+public interface ${className}AllServiceFacade {
+
+    /**
+     * 主子表全量存储
+     *
+     * @param ${pathName}AllCommand
+     */
+    void saveAll(${className}AllCommand ${pathName}AllCommand);
+
+}
+

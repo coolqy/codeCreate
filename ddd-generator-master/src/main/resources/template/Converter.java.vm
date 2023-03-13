@@ -1,0 +1,40 @@
+package ${package}.${moduleName}.infrastructure.persistence.mybatis.converter;
+
+
+import ${package}.${moduleName}.domain.model.entity.${className};
+import ${package}.${moduleName}.domain.model.types.${className}Id;
+import ${package}.${moduleName}.infrastructure.persistence.mybatis.entity.${className}DO;
+import org.springframework.beans.BeanUtils;
+import org.apache.commons.lang3.StringUtils;
+import ${package}.${moduleName}.domain.shared.StatusEnum;
+
+
+/**
+ * ${comments}Converter
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+public class ${className}Converter {
+
+	public static ${className} to${className}(${className}DO ${pathName}DO) {
+		${className} ${pathName} = new ${className}();
+		BeanUtils.copyProperties(${pathName}DO, ${pathName});
+		${pathName}.setStatus(StatusEnum.getStatusEnum(${pathName}DO.getStatus()));
+		if (!StringUtils.isEmpty(${pathName}DO.getId())) {
+			${pathName}.setId(new ${className}Id(${pathName}DO.getId()));
+		}
+		return ${pathName};
+	}
+
+	public static ${className}DO from${className}(${className} ${pathName}) {
+		${className}DO ${pathName}DO = new ${className}DO();
+		BeanUtils.copyProperties(${pathName}, ${pathName}DO);
+		${pathName}DO.setStatus(${pathName}.getStatus().getValue());
+		if (${pathName}.getId() != null) {
+			${pathName}DO.setId(${pathName}.getId().getId());
+		}
+		return ${pathName}DO;
+	}
+}

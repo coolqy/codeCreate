@@ -1,0 +1,25 @@
+package  ${package}.${moduleName}.infrastructure.util.validator;
+
+import ${package}.${moduleName}.infrastructure.util.exception.AppException;
+import org.apache.commons.lang.StringUtils;
+
+/**
+ * 数据校验
+ *
+ * @author ${author}
+ * @date ${datetime}
+ */
+public abstract class Assert {
+
+    public static void isBlank(String str, String message) {
+        if (StringUtils.isBlank(str)) {
+            throw new AppException(message);
+        }
+    }
+
+    public static void isNull(Object object, String message) {
+        if (object == null) {
+            throw new AppException(message);
+        }
+    }
+}

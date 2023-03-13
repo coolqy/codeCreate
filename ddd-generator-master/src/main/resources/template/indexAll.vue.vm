@@ -1,0 +1,442 @@
+#foreach ($column in $columns)
+  #if($column.attrname != "id"
+  &&$column.attrname != "delFlag"
+  &&$column.attrname != "createdBy"
+  &&$column.attrname != "createdTime"
+  &&$column.attrname != "updatedBy"
+  &&$column.attrname != "updatedTime"
+  &&$column.attrname != "tenantId"
+  &&$column.attrname != "status")
+    #set( $onefind= $column)
+    #break
+  #end
+#end
+<template>
+  <div class="mod-user">
+    <el-form :inline="true" :model="dataForm" ref="dataFindForm" @keyup.enter.native="getDataList(0)" label-width="80px">
+      <div v-show='formIsShow'>
+      #foreach ($column in $columns)
+
+        #if($column.attrname != "id"
+        &&$column.attrname != "delFlag"
+        &&$column.attrname != "createdBy"
+        &&$column.attrname != "createdTime"
+        &&$column.attrname != "updatedBy"
+        &&$column.attrname != "updatedTime"
+        &&$column.attrname != "tenantId"
+        &&$column.attrname != "status"
+        &&$column.attrname != "userid"
+        &&$column.attrname != $onefind.attrname)
+          <el-col :span="8">
+            #if($column.attrType != "Date")
+              <el-form-item label="$column.comments" prop="$column.attrname">
+                <el-input v-model="dataForm.$column.attrname" placeholder="$column.comments"></el-input>
+              </el-form-item>
+            #end
+            #if($column.attrType == "Date")
+              <el-form-item label="$column.comments" prop="$column.attrname">
+                <el-date-picker
+                        v-model="dataForm.$column.attrname"
+                        type="datetime"
+                        placeholder="选择日期时间"
+                        align="right"
+                        format="yyyy-MM-dd HH:mm:ss"
+                        value-format="yyyy-MM-dd HH:mm:ss"
+                        :picker-options="pickerOptions">
+                </el-date-picker>
+              </el-form-item>
+            #end
+          </el-col>
+        #end
+
+        #if($column.attrname == "status")
+          <el-col :span="8">
+            <el-form-item label="状态" prop="status">
+              <el-select v-model="dataForm.status" value="" placeholder="请选择状态">
+                <el-option label="所有" value=""></el-option>
+                <el-option label="启用" value="0"></el-option>
+                <el-option label="禁用" value="1"></el-option>
+              </el-select>
+            </el-form-item>
+          </el-col>
+        #end
+
+        #if($column.attrname == "userid")
+          <el-col :span="8">
+            <el-form-item label="用户ID" prop="userid">
+              <el-input style="width: 195px;" v-model="dataForm.userid" @focus="getUserId()" clearable readonly placeholder="请选择用户">
+                <el-button slot="append" icon="el-icon-close" @click="deleteUser"></el-button>
+              </el-input>
+            </el-form-item>
+          </el-col>
+        #end
+      #end
+
+      <el-col :span="8">
+      <el-form-item label="开始时间" prop="date1">
+          <el-date-picker
+                  v-model="dataForm.date1"
+                  type="datetime"
+                  placeholder="创建开始时间"
+                  align="right"
+                  format="yyyy-MM-dd HH:mm:ss"
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                  :picker-options="pickerOptions">
+          </el-date-picker>
+      </el-form-item>
+      </el-col>
+      <el-col :span="8">
+      <el-form-item label="结束时间" prop="date2">
+          <el-date-picker
+                  v-model="dataForm.date2"
+                  type="datetime"
+                  placeholder="创建结束时间"
+                  align="right"
+                  format="yyyy-MM-dd HH:mm:ss"
+                  value-format="yyyy-MM-dd HH:mm:ss"
+                  :picker-options="pickerOptions">
+          </el-date-picker>
+      </el-form-item>
+      </el-col>
+      </div>
+
+      <el-col :span="24">
+        <el-button type="primary"
+                   @click="showFind()"
+                   style="float: right;margin-right: 15px;">高级查询<i :class="findicon"></i>
+        </el-button>
+        <el-button style="float: right;margin-right: 15px;"
+                   @click="resetForm('dataFindForm')"
+                   icon="el-icon-refresh"
+                   type="warning">重置
+        </el-button>
+        <el-button style="float: right;margin-right: 10px;"
+                   @click="getDataList(0)">查询
+        </el-button>
+        #foreach ($column in $columns)
+          #if($column.attrname != "id"
+          &&$column.attrname != "delFlag"
+          &&$column.attrname != "createdBy"
+          &&$column.attrname != "createdTime"
+          &&$column.attrname != "updatedBy"
+          &&$column.attrname != "updatedTime"
+          &&$column.attrname != "tenantId"
+          &&$column.attrname != "status"
+          &&$column.attrname == $onefind.attrname)
+              <el-form-item prop="$column.attrname" style="float: right;margin-right: 10px;width: 200px;">
+                <el-input v-model="dataForm.$column.attrname" placeholder="$column.comments" clearable></el-input>
+              </el-form-item>
+          #end
+        #end
+        <el-button icon="el-icon-circle-plus-outline"
+                   v-if="isAuth('${moduleName}:${pathName}:save')"
+                   type="primary"
+                   @click="addOrUpdateHandle()">新增
+        </el-button>
+        <el-button icon="el-icon-remove-outline"
+                   v-if="isAuth('${moduleName}:${pathName}:delete')"
+                   type="danger"
+                   @click="deleteHandle()"
+                   :disabled="dataListSelections.length <= 0">删除
+        </el-button>
+      </el-col>
+
+    </el-form>
+
+
+    <el-table
+            :data="dataList"
+            border
+            v-loading="dataListLoading"
+            @selection-change="selectionChangeHandle"
+            style="width: 100%;">
+      <el-table-column
+              type="selection"
+              header-align="center"
+              align="center"
+              width="50">
+      </el-table-column>
+
+      #foreach ($column in $columns)
+        #if($column.attrname != "id"
+        &&$column.attrname != "delFlag"
+        &&$column.attrname != "createdBy"
+        &&$column.attrname != "createdTime"
+        &&$column.attrname != "updatedBy"
+        &&$column.attrname != "updatedTime"
+        &&$column.attrname != "tenantId")
+          <el-table-column
+                  prop="$column.attrname"
+                  header-align="center"
+                  align="center"
+                  label="$column.comments">
+            #if($column.attrname == "photo")
+              <template slot-scope="scope">
+                <el-button @click="downloadFile(scope.row.photo)" icon="el-icon-download"></el-button>
+              </template>
+            #end
+            #if($column.attrname == "status")
+              <template slot-scope="scope">
+                <el-tag v-if="scope.row.status === '0'" size="small">正常</el-tag>
+                <el-tag v-else size="small" type="danger">禁用</el-tag>
+              </template>
+            #end
+          </el-table-column>
+        #end
+      #end
+      <el-table-column
+              prop="createdTime"
+              header-align="center"
+              align="center"
+              width="180"
+              label="创建时间">
+      </el-table-column>
+      <el-table-column
+              fixed="right"
+              header-align="center"
+              align="center"
+              width="150"
+              label="操作">
+        <template slot-scope="scope">
+          <el-button v-if="isAuth('${moduleName}:${pathName}:update') && scope.row.status == '0'" type="text" size="small"
+                     @click="addOrUpdateHandle(scope.row.id)">修改
+          </el-button>
+          <el-button v-if="isAuth('${moduleName}:${pathName}:disable')" type="text" size="small" @click="disableHandle(scope.row)">
+            {{ scope.row.status == '0' ? '禁用' : '启用' }}
+          </el-button>
+          <el-button v-if="isAuth('${moduleName}:${pathName}:delete')" type="text" size="small" @click="deleteHandle(scope.row.id)">删除
+          </el-button>
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-pagination
+            @size-change="sizeChangeHandle"
+            @current-change="currentChangeHandle"
+            :current-page="pageIndex"
+            :page-sizes="[10, 20, 50, 100]"
+            :page-size="pageSize"
+            :total="totalPage"
+            layout="total, sizes, prev, pager, next, jumper">
+    </el-pagination>
+    <!-- 弹窗, 新增 / 修改 -->
+    <add-or-update v-if="addOrUpdateVisible" ref="addOrUpdate" @refreshDataList="getDataList()"></add-or-update>
+    <!-- 弹窗, 新增  -->
+    <userSelect v-if="userVisible" ref="userSelect" @displayUserInfo="displayUserInfo"></userSelect>
+  </div>
+</template>
+
+<script>
+  import AddOrUpdate from './${pathName}-update'
+  import userSelect from '../user/user-select'
+
+  export default {
+    data() {
+      return {
+        dataForm: {
+          #foreach ($column in $columns)
+            #if($column.attrname != "id"
+            &&$column.attrname != "delFlag"
+            &&$column.attrname != "createdBy"
+            &&$column.attrname != "createdTime"
+            &&$column.attrname != "updatedBy"
+            &&$column.attrname != "updatedTime"
+            &&$column.attrname != "tenantId")
+                $column.attrname: '',
+            #end
+          #end
+          date1: '',
+          date2: ''
+        },
+        userVisible: false,
+        formIsShow: false,
+        findicon: 'el-icon-arrow-down el-icon--right',
+        dataList: [],
+        pageIndex: 1,
+        pageSize: 10,
+        totalPage: 0,
+        dataListLoading: false,
+        dataListSelections: [],
+        addOrUpdateVisible: false,
+        pickerOptions: {
+          shortcuts: [{
+            text: '今天',
+            onClick(picker) {
+              #[[picker.$emit('pick', new Date());]]#
+            }
+          }, {
+            text: '昨天',
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() - 3600 * 1000 * 24);
+              #[[picker.$emit('pick', date);]]#
+            }
+          }, {
+            text: '一周前',
+            onClick(picker) {
+              const date = new Date();
+              date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+              picker.$emit('pick', date);
+            }
+          }]
+        }
+      }
+    },
+    components: {
+      AddOrUpdate,
+      userSelect
+    },
+    activated() {
+      this.getDataList(0)
+    },
+    methods: {
+      downloadFile(file) {
+        if (file == null || file == '') {
+          #[[this.$message.error('请先上传文件');]]#
+                  return;
+        }
+        #[[window.open(this.$http.adornUrl('/sys/oss/download/' + file + '?token=' + this.$cookie.get('token') + '&tenantId=' + this.$cookie.get('tenantId')));]]#
+      },
+      // 获取数据列表
+      getDataList(val) {
+        if (val != null && val == 0) {
+          this.pageIndex = 1;
+        }
+        this.dataListLoading = true
+        #[[this.$http({]]#
+        #[[url: this.$http.adornUrl]]#('/${pathName}/list'),
+                method: 'get',
+                #[[params: this.$http.adornParams({]]#
+                'page': this.pageIndex,
+                'limit': this.pageSize,
+                #foreach ($column in $columns)
+        #if($column.attrname != "id"
+                &&$column.attrname != "delFlag"
+                &&$column.attrname != "createdBy"
+                &&$column.attrname != "createdTime"
+                &&$column.attrname != "updatedBy"
+                &&$column.attrname != "updatedTime"
+                &&$column.attrname != "tenantId")
+        '$column.attrname':  this.dataForm.$column.attrname,
+                #end
+        #end
+        'date1': this.dataForm.date1,
+                'date2': this.dataForm.date2
+      })
+      }).then(({data}) => {
+          if (data && data.code === 0) {
+            this.dataList = data.page.list
+            this.totalPage = data.page.totalCount
+          } else {
+            this.dataList = []
+            this.totalPage = 0
+          }
+          this.dataListLoading = false
+        })
+      },
+      // 每页数
+      sizeChangeHandle(val) {
+        this.pageSize = val
+        this.pageIndex = 1
+        this.getDataList()
+      },
+      // 当前页
+      currentChangeHandle(val) {
+        this.pageIndex = val
+        this.getDataList()
+      },
+      // 多选
+      selectionChangeHandle(val) {
+        this.dataListSelections = val
+      },
+      // 新增 / 修改
+      addOrUpdateHandle(id) {
+        this.addOrUpdateVisible = true
+        #[[this.$nextTick(() => {]]#
+          #[[this.$refs.addOrUpdate.init(id)]]#
+        })
+      },
+      // 删除
+      deleteHandle(id) {
+        var userIds = id ? [id] : this.dataListSelections.map(item => {
+          return item.id
+        })
+        #[[this.$confirm(`确定对[id=${userIds.join(',')}]进行[${id ? '删除' : '批量删除'}]操作?`, '提示', {]]#
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+      }).then(() => {
+          #[[this.$http({]]#
+          #[[url: this.$http.adornUrl]]#('/${pathName}/delete'),
+                  method: 'post',
+                  #[[data: this.$http.adornData(userIds, false)]]#
+        }).then(({data}) => {
+            if (data && data.code === 0) {
+              #[[this.$message({]]#
+                      message: '操作成功',
+                      type: 'success',
+                      duration: 1500,
+                      onClose: () => {
+                this.getDataList()
+              }
+            })
+            } else {
+              #[[this.$message.error(data.msg)]]#
+            }
+          })
+        }).catch(() => {
+        })
+      },
+      // 禁用
+      disableHandle(row) {
+        var id = row.id;
+        var info = row.status == '0' ? '禁用' : '启用';
+        #[[this.$confirm(`确定对[id=${id}]进行[` + info + `]操作?`, '提示', {]]#
+                confirmButtonText: '确定',
+                cancelButtonText: '取消',
+                type: 'warning'
+      }).then(() => {
+          #[[this.$http({]]#
+          #[[url: this.$http.adornUrl]]#(`/${pathName}/disable/${id}`),
+                  method: 'post',
+                  #[[data: this.$http.adornData()]]#
+        }).then(({data}) => {
+            if (data && data.code === 0) {
+              #[[this.$message({]]#
+                      message: '操作成功',
+                      type: 'success',
+                      duration: 1500,
+                      onClose: () => {
+                this.getDataList()
+              }
+            })
+            } else {
+              #[[this.$message.error(data.msg)]]#
+            }
+          })
+        }).catch(() => {
+        })
+      },
+      resetForm(formName) {
+        #[[this.$refs[formName].resetFields();]]#
+      },
+      showFind() {
+        if (this.formIsShow) {
+          this.formIsShow = false;
+          this.findicon = 'el-icon-arrow-down el-icon--right';
+        } else {
+          this.formIsShow = true;
+          this.findicon = 'el-icon-arrow-up el-icon--right';
+        }
+      },deleteUser() {
+        this.dataForm.userid = "";
+      },getUserId() {
+        this.userVisible = true
+        this.$nextTick(() => {
+          this.$refs.userSelect.init()
+        })
+      },displayUserInfo(val) {
+        this.dataForm.userid = val.id;
+      }
+    }
+  }
+</script>

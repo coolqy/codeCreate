@@ -1,0 +1,83 @@
+package ${package}.${moduleName}.interfaces.facade.impl;
+
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import ${package}.${moduleName}.application.${className}Service;
+import ${package}.${moduleName}.domain.model.entity.${className};
+import ${package}.${moduleName}.domain.model.types.${className}Id;
+import ${package}.${moduleName}.domain.repository.${className}Repository;
+import ${package}.${moduleName}.domain.shared.Page;
+import ${package}.${moduleName}.infrastructure.persistence.mybatis.converter.PageConverter;
+import ${package}.${moduleName}.infrastructure.persistence.mybatis.entity.${className}DO;
+import ${package}.${moduleName}.infrastructure.persistence.mybatis.mapper.${className}Mapper;
+import ${package}.${moduleName}.infrastructure.util.mybatis.Query;
+import ${package}.${moduleName}.interfaces.facade.${className}ServiceFacade;
+import ${package}.${moduleName}.interfaces.facade.assembler.${className}DTOAssembler;
+import ${package}.${moduleName}.interfaces.facade.dto.${className}DTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * ${comments}FacadeImpl
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+@Component
+public class ${className}ServiceFacadeImpl implements ${className}ServiceFacade {
+
+	@Autowired
+	private ${className}Service ${pathName}Service;
+
+	@Autowired
+	private ${className}Mapper ${pathName}Mapper;
+
+	@Autowired
+	private ${className}Repository ${pathName}Repository;
+
+
+	@Override
+	public Page queryPage(Map<String, Object> params) {
+		IPage<${className}DO> page = ${pathName}Mapper.queryPage(new Query().getPage(params), params);
+		return PageConverter.toPage(page);
+	}
+
+	@Override
+	public ${className}DTO find(String id) {
+		return ${className}DTOAssembler.from${className}(${pathName}Repository.find(new ${className}Id(id)));
+	}
+
+	@Override
+	public void save(${className}DTO ${pathName}DTO) {
+		${className} ${pathName} = ${className}DTOAssembler.to${className}(${pathName}DTO);
+		${pathName}Service.add(${pathName});
+		${pathName}DTO.setId(${pathName}.getId().getId());
+	}
+
+	@Override
+	public void update(${className}DTO ${pathName}DTO) {
+		${className} ${pathName} = ${className}DTOAssembler.to${className}(${pathName}DTO);
+		${pathName}Service.update(${pathName} );
+	}
+
+	@Override
+	public void deleteBatch(List<String> ids) {
+		List<${className}Id> tempIds = new ArrayList<>();
+		ids.forEach(id -> {
+			tempIds.add(new ${className}Id(id));
+		});
+		${pathName}Service.delete(tempIds);
+	}
+
+	@Override
+	public void disable(String id) {
+		${pathName}Service.disable(new ${className}Id(id));
+	}
+
+}
+

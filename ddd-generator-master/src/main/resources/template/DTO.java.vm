@@ -1,0 +1,36 @@
+package ${package}.${moduleName}.interfaces.facade.dto;
+
+
+import lombok.Data;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.Date;
+
+
+/**
+ * ${comments}DTO
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+
+@Data
+public class ${className}DTO implements Serializable {
+
+    #foreach ($column in $columns)
+    #if($column.attrname != "delFlag"
+    &&$column.attrname != "createdBy"
+    &&$column.attrname != "createdTime"
+    &&$column.attrname != "updatedBy"
+    &&$column.attrname != "updatedTime")
+    /**
+     * $column.comments
+     */
+    private $column.attrType $column.attrname;
+    #end
+    #end
+
+}
+

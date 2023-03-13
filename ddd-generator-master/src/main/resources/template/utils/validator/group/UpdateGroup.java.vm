@@ -1,0 +1,12 @@
+package  ${package}.${moduleName}.infrastructure.util.validator.group;
+
+
+/**
+ * 更新数据 Group
+ *
+ * @author ${author}
+ * @date ${datetime}
+ */
+public interface UpdateGroup {
+
+}

@@ -1,0 +1,51 @@
+package ${package}.${moduleName}.infrastructure.persistence.mybatis.entity;
+
+
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableName;
+import ${package}.common.BaseDO;
+import lombok.Data;
+
+import java.math.BigDecimal;
+import java.util.Date;
+
+/**
+ * ${comments}DO
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+@Data
+@TableName("${tableName}")
+public class ${className}DO extends BaseDO {
+
+    #foreach ($column in $columns)
+    #if($column.attrname != "id"
+    &&$column.attrname != "delFlag"
+    &&$column.attrname != "createdBy"
+    &&$column.attrname != "createdTime"
+    &&$column.attrname != "updatedBy"
+    &&$column.attrname != "updatedTime")
+    /**
+     * $column.comments
+     */
+    private $column.attrType $column.attrname;
+    #end
+
+    #if($column.attrname == "tenantId")
+    /**
+     * 租户编码
+     */
+    @TableField(exist = false)
+    private String tenantCode;
+
+    /**
+     * 租户名称
+     */
+    @TableField(exist = false)
+    private String tenantName;
+    #end
+    #end
+}
+

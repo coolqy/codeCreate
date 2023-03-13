@@ -1,0 +1,60 @@
+package ${package}.${moduleName}.application.impl;
+
+
+import ${package}.${moduleName}.application.${className}Service;
+import ${package}.${moduleName}.domain.factory.${className}Factory;
+import ${package}.${moduleName}.domain.model.entity.${className};
+import ${package}.${moduleName}.domain.model.types.${className}Id;
+import ${package}.${moduleName}.domain.repository.${className}Repository;
+import ${package}.${moduleName}.domain.specification.${className}UpdateSpecification;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+/**
+ * ${comments}ServiceImpl
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+@Service
+public class ${className}ServiceImpl implements ${className}Service {
+
+	@Autowired
+	private ${className}Repository ${pathName}Repository;
+
+	@Autowired
+	private ${className}Factory ${pathName}Factory;
+
+	@Override
+	public void add(${className} ${pathName}) {
+			${pathName}Repository.store(${pathName});
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void update(${className} ${pathName}) {
+		${className}UpdateSpecification ${pathName}UpdateSpecification = new ${className}UpdateSpecification();
+		${pathName}UpdateSpecification.isSatisfiedBy(${pathName});
+		${pathName}Repository.store(${pathName});
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void delete(List<${className}Id> ids) {
+		${pathName}Repository.delete(ids);
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void disable(${className}Id id) {
+		${className} ${pathName} = ${pathName}Repository.find(id);
+		${pathName}.disable();
+		${className}UpdateSpecification ${pathName}UpdateSpecification = new ${className}UpdateSpecification();
+		${pathName}UpdateSpecification.isSatisfiedBy(${pathName});
+		${pathName}Repository.update(${pathName});
+	}
+}

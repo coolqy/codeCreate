@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="${package}.${moduleName}.infrastructure.persistence.mybatis.mapper.${className}Mapper">
+    <select id="queryPage" parameterType="Map"
+            resultType="${package}.${moduleName}.infrastructure.persistence.mybatis.entity.${className}DO">
+        SELECT
+        u.*
+        FROM
+        ${tableName} u
+        <where>
+            #foreach ($column in $columns)
+                #if($column.attrname == "delFlag")
+                    AND u.del_flag='0'
+                #end
+                #if($column.attrname != "id"
+                &&$column.attrname != "delFlag"
+                &&$column.attrname != "createdBy"
+                &&$column.attrname != "createdTime"
+                &&$column.attrname != "updatedBy"
+                &&$column.attrname != "updatedTime")
+                    <if test="params.$column.attrname != null and params.$column.attrname !=''">
+                        AND u.$column.columnName = #{params.$column.attrname}
+                    </if>
+                #end
+                #if($column.attrname == "createdTime")
+                    <if test="params.date1 != null and params.date1 !=''">
+                        AND u.created_time >= #{params.date1}
+                    </if>
+                    <if test="params.date2 != null and params.date2 !=''">
+                        AND u.created_time &lt;= #{params.date2}
+                    </if>
+                #end
+            #end
+        </where>
+        order by u.created_time desc
+    </select>
+
+    <select id="queryEntity" parameterType="Map"
+            resultType="${package}.${moduleName}.infrastructure.persistence.mybatis.entity.${className}DO">
+        SELECT
+        #if($columns.contains("tenantId"))
+            u.*,t.tenant_code,t.tenant_name
+            FROM
+            ${tableName} u
+            inner JOIN sys_tenant t ON u.tenant_id = t.id
+        #end
+        #if(!$columns.contains("tenantId"))
+            u.*
+            FROM
+            ${tableName} u
+        #end
+        <where>
+            #if($!columns.contains("delFlag"))
+                AND u.del_flag='0'
+            #end
+            <if test="params.id != null and params.id !=''">
+                AND u.id = #{params.id}
+            </if>
+        </where>
+    </select>
+</mapper>

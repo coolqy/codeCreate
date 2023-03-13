@@ -1,0 +1,250 @@
+<template>
+    <el-container>
+        <el-main>
+
+        <el-form :model="dataForm" :rules="dataRule" ref="dataForm" @keyup.enter.native="dataFormSubmit()"
+                 label-width="80px">
+
+            #foreach ($column in $columns)
+                #if($column.attrname != "id"
+                &&$column.attrname != "delFlag"
+                &&$column.attrname != "createdBy"
+                &&$column.attrname != "createdTime"
+                &&$column.attrname != "updatedBy"
+                &&$column.attrname != "updatedTime"
+                &&$column.attrname != "tenantId"
+                &&$column.attrname != "userid"
+                &&$column.attrname != "photo"
+                &&$column.attrname != "status")
+                <el-col :span="12">
+                    #if($column.attrType != "BigDecimal"
+                    &&$column.attrType != "Date")
+                        <el-form-item label="$column.comments" prop="$column.attrname">
+                            <el-input v-model="dataForm.$column.attrname" placeholder="$column.comments"></el-input>
+                        </el-form-item>
+                    #end
+                    #if($column.attrType == "BigDecimal")
+                        <el-form-item label="$column.comments" prop="$column.attrname">
+                            <el-input-number v-model="dataForm.$column.attrname" :precision="2" :step="0.1" :max="100000"></el-input-number>
+                        </el-form-item>
+                    #end
+                    #if($column.attrType == "Date")
+                        <el-form-item label="$column.comments" prop="$column.attrname">
+                            <el-date-picker
+                                    v-model="dataForm.$column.attrname"
+                                    type="datetime"
+                                    placeholder="选择日期时间"
+                                    align="right"
+                                    format="yyyy-MM-dd HH:mm:ss"
+                                    value-format="yyyy-MM-dd HH:mm:ss"
+                                    :picker-options="pickerOptions">
+                            </el-date-picker>
+                        </el-form-item>
+                    #end
+                </el-col>
+                #end
+
+                #if($column.attrname == "status")
+                <el-col :span="12">
+                    <el-form-item label="状态" prop="status">
+                        <el-switch
+                                v-model="dataForm.status"
+                                active-value="0"
+                                inactive-value="1"
+                                active-text="启用"
+                                inactive-text="禁用">
+                        </el-switch>
+                    </el-form-item>
+                </el-col>
+                #end
+
+                #if($column.attrname == "userid")
+                    <el-col :span="12">
+                        <el-form-item label="$column.comments" prop="userid">
+                            <el-input v-model="dataForm.userid" @focus="getUserId()" clearable readonly placeholder="请选择$column.comments">
+                                <el-button slot="append" icon="el-icon-search" @click="getUserId()"></el-button>
+                                <el-button slot="append" icon="el-icon-close" @click="deleteUser"></el-button>
+                            </el-input>
+                        </el-form-item>
+                    </el-col>
+                #end
+
+
+                #if($column.attrname == "photo")
+                    <el-col :span="12">
+                        <el-form-item label="$column.comments" prop="photo">
+                            <el-upload
+                                    :action="imageUploadUrl"
+                                    :headers="imageUploadHeader"
+                                    :show-file-list="false"
+                                    :on-success="handleAvatarSuccess"
+                                    :before-upload="beforeAvatarUpload">
+                                <el-button type="primary" slot="trigger" icon="el-icon-upload2"></el-button>
+                                <el-input placeholder="请输入$column.comments" v-model="dataForm.photo" style="width: 280px;float: left" readonly>
+                                    <el-button @click="downloadFile(dataForm.photo)" slot="append" icon="el-icon-download"></el-button>
+                                </el-input>
+                            </el-upload>
+                        </el-form-item>
+                    </el-col>
+                #end
+
+            #end
+
+        </el-form>
+
+        <!-- 弹窗, 新增  -->
+        <userSelect v-if="userVisible" ref="userSelect" @displayUserInfo="displayUserInfo"></userSelect>
+
+        </el-main>
+    </el-container>
+</template>
+
+<script>
+    import userSelect from '../user/user-select'
+
+    export default {
+        data() {
+            return {
+                imageUploadUrl: #[[this.$http.adornUrl(`/sys/oss/upload`)]]#,
+                imageUploadHeader: {
+                    #[[token: this.$cookie.get('token'),]]#
+                    #[[tenant_id: this.$cookie.get('tenantId')]]#
+                },
+                userVisible: false,
+                visible: false,
+                pickerOptions: {
+                    shortcuts: [{
+                        text: '今天',
+                        onClick(picker) {
+                            #[[picker.$emit('pick', new Date());]]#
+                        }
+                    }, {
+                        text: '昨天',
+                        onClick(picker) {
+                            const date = new Date();
+                            date.setTime(date.getTime() - 3600 * 1000 * 24);
+                            #[[picker.$emit('pick', date);]]#
+                        }
+                    }, {
+                        text: '一周前',
+                        onClick(picker) {
+                            const date = new Date();
+                            date.setTime(date.getTime() - 3600 * 1000 * 24 * 7);
+                            #[[picker.$emit('pick', date);]]#
+                        }
+                    }]
+                },
+                dataForm: {
+            #foreach ($column in $columns)
+            #if($column.attrname != "id"
+                    &&$column.attrname != "delFlag"
+                    &&$column.attrname != "createdBy"
+                    &&$column.attrname != "createdTime"
+                    &&$column.attrname != "updatedBy"
+                    &&$column.attrname != "updatedTime"
+                    &&$column.attrname != "tenantId"
+                    &&$column.attrname != "status")
+            $column.attrname: '',
+                    #end
+            #end
+            status: '0',
+            id: 0
+        },
+            dataRule: {
+                #foreach ($column in $columns)
+                #if($column.attrname != "id"
+                        &&$column.attrname != "delFlag"
+                        &&$column.attrname != "createdBy"
+                        &&$column.attrname != "createdTime"
+                        &&$column.attrname != "updatedBy"
+                        &&$column.attrname != "updatedTime"
+                        &&$column.attrname != "tenantId")
+                $column.attrname: [
+                    {required: true, message: '$column.comments不能为空', trigger: 'blur'}
+                ],
+                        #end
+                #end
+            }
+        }
+        },
+        components: {
+            userSelect
+        },
+        methods: {
+            downloadFile(file) {
+                if (file == null || file == '') {
+                    #[[this.$message.error('请先上传文件');]]#
+                    return;
+                }
+                #[[window.open(this.$http.adornUrl('/sys/oss/download/' + file + '?token=' + this.$cookie.get('token') + '&tenantId=' + this.$cookie.get('tenantId')));]]#
+            },
+            handleAvatarSuccess(res, file) {
+                this.dataForm.photo = res.url;
+            },
+            beforeAvatarUpload(file) {
+                //const isJPG = file.type === 'image/jpeg';
+                //const isPNG = file.type === 'image/png';
+                const isLt10M = file.size / 1024 / 1024 < 10;
+
+                //if (!(isJPG || isPNG)) {
+                //    #[[this.$message.error('上传头像图片只能是 JPG、png 格式!');]]#
+                //}
+                if (!isLt10M) {
+                    #[[this.$message.error('上传头像图片大小不能超过 10MB!');]]#
+                }
+                //return (isJPG || isPNG) && isLt10M;
+                return isLt10M;
+            },
+            init(id) {
+                this.dataForm.id = id || 0
+                this.visible = true
+                #[[this.$nextTick(() => {]]#
+                    #[[this.$refs['dataForm'].resetFields()]]#
+                            if (this.dataForm.id) {
+                        #[[this.$http({]]#
+                        #[[url: this.$http.adornUrl]]#(`/${pathName}/info/${this.dataForm.id}`),
+                                method: 'get',
+                                #[[params: this.$http.adornParams()]]#
+                    }).then(({data}) => {
+                            if (data && data.code === 0) {
+                                #foreach ($column in $columns)
+                                #if($column.attrname != "id"
+                                        &&$column.attrname != "delFlag"
+                                        &&$column.attrname != "createdBy"
+                                        &&$column.attrname != "createdTime"
+                                        &&$column.attrname != "updatedBy"
+                                        &&$column.attrname != "updatedTime"
+                                        &&$column.attrname != "tenantId")
+                                this.dataForm.$column.attrname = data.${pathName}.$column.attrname
+                                #end
+                                #end
+                            }
+                        })
+                    }
+                })
+            },
+            // 表单提交
+            dataFormSubmit() {
+                #if(${frontCheck})
+                #[[this.$refs['dataForm'].validate((valid) => {]]#
+                        if (valid) {
+                    #[[this.$emit('dataFormSubmitAll', this.dataForm);]]#
+                }
+                })
+                #end
+                #if(!${frontCheck})
+                    #[[this.$emit('dataFormSubmitAll', this.dataForm);]]#
+                #end
+            },deleteUser() {
+                this.dataForm.userid = "";
+            },getUserId() {
+                this.userVisible = true
+                this.$nextTick(() => {
+                    this.$refs.userSelect.init()
+                })
+            },displayUserInfo(val) {
+                this.dataForm.userid = val.id;
+            }
+        }
+    }
+</script>

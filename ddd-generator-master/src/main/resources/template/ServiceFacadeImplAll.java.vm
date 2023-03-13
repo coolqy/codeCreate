@@ -1,0 +1,91 @@
+package ${package}.${moduleName}.interfaces.facade.impl;
+
+#foreach ($sub in $subList)
+import ${package}.${moduleName}.interfaces.web.command.${sub.className}Command;
+import ${package}.${moduleName}.domain.model.entity.${sub.className};
+import ${package}.${moduleName}.infrastructure.persistence.mybatis.converter.${sub.className}Converter;
+import ${package}.${moduleName}.infrastructure.persistence.mybatis.entity.${sub.className}DO;
+import ${package}.${moduleName}.infrastructure.persistence.mybatis.repository.impl.${sub.className}RepositoryImpl;
+import ${package}.${moduleName}.interfaces.facade.assembler.${sub.className}DTOAssembler;
+import ${package}.${moduleName}.interfaces.facade.dto.${sub.className}DTO;
+#end
+import ${package}.${moduleName}.interfaces.facade.${className}AllServiceFacade;
+import ${package}.${moduleName}.interfaces.facade.${className}ServiceFacade;
+import ${package}.${moduleName}.interfaces.facade.dto.${className}DTO;
+import ${package}.${moduleName}.interfaces.web.command.${className}AllCommand;
+import ${package}.${moduleName}.interfaces.web.command.${className}Command;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+/**
+ * ${comments}AllFacadeImpl
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+@Component
+public class ${className}AllServiceFacadeImpl implements ${className}AllServiceFacade {
+
+	@Autowired
+	private ${className}ServiceFacade ${pathName}ServiceFacade;
+
+	#foreach ($sub in $subList)
+	@Autowired
+	private ${sub.className}RepositoryImpl ${sub.pathName}Repository;
+	#end
+
+	@Override
+	public void saveAll(${className}AllCommand ${pathName}AllCommand) {
+		${className}Command ${pathName}Command = ${pathName}AllCommand.get${className}();
+
+		#foreach ($sub in $subList)
+			List<${sub.className}Command> ${sub.pathName}Command = ${pathName}AllCommand.get${sub.className}();
+		#end
+
+		${className}DTO ${pathName}DTO = new ${className}DTO();
+		BeanUtils.copyProperties(${pathName}Command, ${pathName}DTO);
+
+		//新增
+		if (${pathName}Command.getId() == null || ${pathName}Command.getId().equals("0")) {
+			${pathName}DTO.setId(null);
+			${pathName}ServiceFacade.save(${pathName}DTO);
+		} else {
+			${pathName}ServiceFacade.update(${pathName}DTO);
+		}
+
+		#foreach ($sub in $subList)
+
+			if (${sub.pathName}Command != null && ${sub.pathName}Command.size() > 0) {
+				ArrayList<${sub.className}DO> saveList = new ArrayList<${sub.className}DO>();
+				for (${sub.className}Command temp : ${sub.pathName}Command) {
+					if (StringUtils.isEmpty(temp.getId()) || temp.getId().equals("0")) {
+						temp.setId(null);
+					}
+					temp.set${foreignColumnB}(${pathName}DTO.getId());
+					${sub.className}DTO temp1 = new ${sub.className}DTO();
+					BeanUtils.copyProperties(temp, temp1);
+					${sub.className} temp2 = ${sub.className}DTOAssembler.to${sub.className}(temp1);
+					${sub.className}DO temp3 = ${sub.className}Converter.from${sub.className}(temp2);
+					saveList.add(temp3);
+				}
+
+				List listOne = saveList.stream().filter(temp -> StringUtils.isEmpty(temp.getId())).collect(Collectors.toList());
+				List listTwo = saveList.stream().filter(temp -> !StringUtils.isEmpty(temp.getId())).collect(Collectors.toList());
+				if (listOne != null && listOne.size() > 0) {
+					${sub.pathName}Repository.saveBatch(listOne);
+				}
+				if (listTwo != null && listTwo.size() > 0) {
+					${sub.pathName}Repository.updateBatchById(listTwo);
+				}
+			}
+		#end
+	}
+}
+

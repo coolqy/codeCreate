@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>代码生成器</title>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+<link rel="stylesheet" href="css/bootstrap.min.css">
+<link rel="stylesheet" href="css/font-awesome.min.css">
+<link rel="stylesheet" href="plugins/jqgrid/ui.jqgrid-bootstrap.css">
+<link rel="stylesheet" href="css/main.css">
+<script src="libs/jquery.min.js"></script>
+<script src="plugins/layer/layer.js"></script>
+<script src="libs/bootstrap.min.js"></script>
+<script src="libs/vue.min.js"></script>
+<script src="plugins/jqgrid/grid.locale-cn.js"></script>
+<script src="plugins/jqgrid/jquery.jqGrid.min.js"></script>
+<script src="js/common.js"></script>
+</head>
+<body>
+<div id="rrapp">
+	<div class="grid-btn">
+		<div class="form-group col-sm-2">
+			<input type="text" class="form-control" v-model="q.tableName" @keyup.enter="query" placeholder="表名">
+		</div>
+		<a class="btn btn-default" @click="query">查询</a>
+		<a class="btn btn-primary" @click="generator"><i class="fa fa-file-code-o"></i>&nbsp;单例生成</a>
+		<a class="btn btn-primary" @click="generator2"><i class="fa fa-file-code-o"></i>&nbsp;主子生成</a>
+	</div>
+    <table id="jqGrid"></table>
+    <div id="jqGridPager"></div>
+
+
+	<!-- 模态框（Modal） -->
+	<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+					<h4 class="modal-title" id="myModalLabel">主子生成</h4>
+				</div>
+				<div class="modal-body">
+					<div id="baseInfo">
+					<label for="tableListId">选择主表</label>
+					<div>
+						<select class="form-control" id="tableListId">
+							<option>1</option>
+							<option>2</option>
+							<option>3</option>
+							<option>4</option>
+							<option>5</option>
+						</select>
+					</div>
+					<label for="firstname">主表的关联字段</label>
+					<div>
+						<input type="text" class="form-control" id="firstname" placeholder="请输入与主表关联字段,多个子表的关联字段要统一">
+					</div>
+					</div>
+					<label for="packageName">包名[package]</label>
+					<div>
+						<input type="text" class="form-control" id="packageName" placeholder="请输入包名[package]">
+					</div>
+					<label for="moduleName">模块名[moduleName]</label>
+					<div>
+						<input type="text" class="form-control" id="moduleName" placeholder="请输入模块名[moduleName]">
+					</div>
+					<label for="tablePrefix">表名的前缀[tablePrefix]</label>
+					<div>
+						<input type="text" class="form-control" id="tablePrefix" placeholder="请输入表名的前缀[tablePrefix]">
+					</div>
+					<label for="tablePrefix">是否前端验证</label>
+					<div>
+						<label>
+							<input type="radio" name="checkRadios" id="checkRadios2" value="0"> 关闭
+						</label>
+						<label>
+							<input type="radio" name="checkRadios" id="checkRadios1" value="1" checked> 开启
+						</label>
+					</div>
+					<label for="tablePrefix">是否自动部署</label>
+					<div>
+                        <label>
+                            <input type="radio" name="optionsRadios" id="optionsRadios1" value="0" checked> 关闭
+                        </label>
+                        <label>
+                            <input type="radio" name="optionsRadios" id="optionsRadios2" value="1"> 开启
+                        </label>
+					</div>
+
+                    <div id="urlInfoId">
+						<label for="tablePrefix">是否自动执行sql</label>
+						<div>
+							<label>
+								<input type="radio" name="sqlRadios" id="sqlRadios2" value="0" checked> 关闭
+							</label>
+							<label>
+								<input type="radio" name="sqlRadios" id="sqlRadios1" value="1"> 开启
+							</label>
+						</div>
+						<label for="tablePrefix">前端路径[frontUrl]</label>
+						<div>
+							<input type="text" class="form-control" id="frontUrl" placeholder="前端路径[frontUrl],项目的根目录,例：d:/vue">
+						</div>
+						<label for="tablePrefix">后端路径[adminUrl]</label>
+						<div>
+							<input type="text" class="form-control" id="adminUrl" placeholder="请输入ddd后端项目的根目录路径,例：d:/aimin" onchange="adminUrlChangeFunc()" >
+						</div>
+                        <label for="tablePrefix">ddd_interfaces后端路径[interfacesPath]</label>
+                        <div>
+                            <input type="text" class="form-control" id="interfacesPath" placeholder="请输入后端项目模块interfaces根目录路径,例：d:/aimin/aimin-interfaces">
+                        </div>
+						<label for="tablePrefix">ddd_application后端路径[applicationPath]</label>
+						<div>
+							<input type="text" class="form-control" id="applicationPath" placeholder="请输入后端项目模块application的根目录路径,例：d:/aimin/aimin-application">
+						</div>
+						<label for="tablePrefix">ddd_domain后端路径[domainPath]</label>
+						<div>
+							<input type="text" class="form-control" id="domainPath" placeholder="请输入后端项目模块domain的根目录路径,例：d:/aimin/aimin-domain">
+						</div>
+						<label for="tablePrefix">ddd_infrastructure后端路径[infrastructurePath]</label>
+						<div>
+							<input type="text" class="form-control" id="infrastructurePath" placeholder="请输入后端项目模块infrastructure的根目录路径,例：d:/aimin/aimin-infrastructure">
+						</div>
+
+                    </div>
+
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+					<button type="button" class="btn btn-primary" @click="generator3">开始生成</button>
+				</div>
+			</div><!-- /.modal-content -->
+		</div><!-- /.modal -->
+	</div>
+
+</div>
+
+<script type="application/javascript">
+	//增加时间戳，防止js浏览器缓存不更新
+	 document.write('<script src="js/generator.js?v=1.0?t=' + new Date().getTime() + '"><\/script>');
+	function adminUrlChangeFunc () {
+		var backendPath =  $("#adminUrl").val();
+		var proStart = 0;
+		if (backendPath.indexOf("//") >= 0) {
+			proStart = backendPath.lastIndexOf('//');
+		} else if (backendPath.indexOf("/") >= 0) {
+			proStart = backendPath.lastIndexOf('/');
+		} else if (backendPath.indexOf("\\") >= 0) {
+			proStart = backendPath.lastIndexOf('\\');
+		}
+		var proName = backendPath.substring(proStart, backendPath.length);
+        
+        var sepDot = "-";
+		if (proName.indexOf("-") >= 0){
+			sepDot = "-";
+		}
+
+		$("#interfacesPath").val(backendPath + proName + sepDot + "interfaces");
+		$("#applicationPath").val(backendPath + proName + sepDot + "application");
+		$("#domainPath").val(backendPath + proName + sepDot + "domain");
+		$("#infrastructurePath").val(backendPath + proName + sepDot + "infrastructure");
+	}
+</script>
+</body>
+</html>

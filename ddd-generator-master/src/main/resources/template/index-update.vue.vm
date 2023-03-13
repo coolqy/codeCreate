@@ -1,0 +1,120 @@
+<template>
+    <el-dialog
+            width=90%
+            :close-on-click-modal="false"
+            :show-close="true"
+            center
+            :visible.sync="visible">
+        <span slot="title" class="dialog-title">
+          <span style="font-size: 18px;float: left;">{{ headername }}</span>
+        </span>
+
+        <child ref="addOrUpdateAll" @dataFormSubmitAll="dataFormSubmitAll"></child>
+
+        <el-tabs v-model="activeName" @tab-click="handleClick">
+            #foreach ($sub in $subList)
+                <el-tab-pane label="${sub.comments}" name="child${foreach.count}">
+                    <child${foreach.count} ref="child${foreach.count}"></child${foreach.count}>
+                </el-tab-pane>
+            #end
+        </el-tabs>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="visible = false">取 消</el-button>
+          <el-button type="primary" @click="dataFormSubmit()">确 定</el-button>
+        </span>
+    </el-dialog>
+</template>
+
+<script>
+    import addOrUpdateAll from './${pathName}-add-or-update-all'
+    #foreach ($sub in $subList)
+    import child${foreach.count} from './${pathName}-${sub.pathName}'
+    #end
+
+    export default {
+        components: {
+            #foreach ($sub in $subList)
+                child${foreach.count}: child${foreach.count},
+            #end
+            child: addOrUpdateAll
+        },
+        data() {
+            return {
+                headername: "",
+                activeName: 'child1',
+                visible: false,
+                #foreach ($sub in $subList)
+                    yanzheng${foreach.count}: 0,
+                #end
+                dataForm: {
+                    id: 0
+                },
+            }
+        },
+        methods: {
+            dataFormSubmitAll(dataAll) {
+                #foreach ($sub in $subList)
+                    if (this.yanzheng${foreach.count} == 0) {
+                        this.yanzheng${foreach.count} = [];
+                    }
+                #end
+                #[[this.$http({]]#
+                    #[[url: this.$http.adornUrl(]]#`/${pathName}/saveall`),
+                    method: 'post',
+                    #[[data: this.$http.adornData({]]#
+                        #foreach ($sub in $subList)
+                        '${sub.classname}': this.yanzheng${foreach.count},
+                        #end
+                        '${classname}': dataAll
+                    })
+                }).then(({data}) => {
+                    if (data && data.code === 0) {
+                        #[[this.$message({]]#
+                            message: '操作成功',
+                            type: 'success',
+                            duration: 1500,
+                            onClose: () => {
+                                this.closedialog();
+                                this.getDataList();
+                            }
+                        })
+                    } else {
+                        #[[this.$message.error(data.msg)]]#
+                    }
+                })
+            },
+            dataFormSubmit() {
+                //检查数据
+                #foreach ($sub in $subList)
+                    var yanzehgn${foreach.count} = #[[this.$refs]]#.child${foreach.count}.dataSubmitCheck();
+                    if (yanzehgn${foreach.count} == -1) {
+                        return;
+                    }
+                    this.yanzheng${foreach.count} = yanzehgn${foreach.count};
+                #end
+                #[[this.$refs.addOrUpdateAll.dataFormSubmit();]]#
+            },
+            getDataList() {
+                #[[this.$emit('refreshDataList')]]#
+            },
+            closedialog() {
+                this.visible = false;
+            },
+            handleClick(tab, event) {
+
+            },
+            init(id) {
+                this.activeName = 'child1';
+                this.dataForm.id = id || 0;
+                this.headername = !this.dataForm.id ? '新增${comments}' : '修改查看${comments}';
+                this.visible = true;
+                #[[this.$nextTick(() => {]]#
+                #[[this.$refs.addOrUpdateAll]]#.init(this.dataForm.id);
+                #foreach ($sub in $subList)
+                    #[[this.$refs]]#.child${foreach.count}.init(this.dataForm.id)
+                #end
+                })
+            }
+        }
+    }
+</script>

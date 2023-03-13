@@ -1,0 +1,65 @@
+package ${package}.${moduleName}.interfaces.facade;
+
+
+import ${package}.${moduleName}.domain.shared.Page;
+import ${package}.${moduleName}.interfaces.facade.dto.${className}DTO;
+
+import java.util.List;
+import java.util.Map;
+
+
+/**
+ * ${comments}Facade
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+public interface ${className}ServiceFacade {
+
+    /**
+     * 分页查询
+     *
+     * @param params
+     * @return
+     */
+    Page queryPage(Map<String, Object> params);
+
+
+    /**
+     * 通过ID获取${comments}
+     *
+     * @param id
+     * @return
+     */
+    ${className}DTO find(String id);
+
+    /**
+     * 保存
+     *
+     * @param ${pathName}DTO
+     */
+    void save(${className}DTO ${pathName}DTO);
+
+    /**
+     * 更新
+     *
+     * @param ${pathName}DTO
+     */
+    void update(${className}DTO ${pathName}DTO);
+
+    /**
+     * 批量删除
+     *
+     * @param ids
+     */
+    void deleteBatch(List<String> ids);
+
+    /**
+     * 禁用员工
+     *
+     * @param id
+     */
+    void disable(String id);
+
+}

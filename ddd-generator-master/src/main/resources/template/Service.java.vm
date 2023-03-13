@@ -1,0 +1,47 @@
+package ${package}.${moduleName}.application;
+
+import ${package}.${moduleName}.domain.model.entity.${className};
+import ${package}.${moduleName}.domain.model.types.${className}Id;
+
+import java.util.List;
+
+/**
+ * ${comments}Service
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+public interface ${className}Service {
+
+    /**
+     * 添加
+     *
+     * @param ${pathName}
+     */
+    void add(${className} ${pathName});
+
+    /**
+     * 更新
+     *
+     * @param ${pathName}
+     */
+    void update(${className} ${pathName});
+
+    /**
+     * 删除
+     *
+     * @param ids
+     */
+    void delete(List<${className}Id> ids);
+
+    /**
+     * 禁用
+     *
+     * @param id
+     */
+    void disable(${className}Id id);
+
+}
+
+

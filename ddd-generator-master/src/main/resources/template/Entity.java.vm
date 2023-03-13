@@ -1,0 +1,62 @@
+package ${package}.${moduleName}.domain.model.entity;
+
+
+import ${package}.${moduleName}.domain.model.types.${className}Id;
+import ${package}.${moduleName}.domain.shared.Entity;
+import ${package}.${moduleName}.domain.shared.StatusEnum;
+
+#if(${hasBigDecimal})
+import java.math.BigDecimal;
+#end
+import java.io.Serializable;
+import java.util.Date;
+import lombok.Data;
+
+/**
+ * ${comments}领域对象
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+@Data
+public class ${className} implements Entity<${className}> {
+
+#foreach ($column in $columns)
+	#if($column.columnName == $pk.columnName)
+	private ${className}Id id;
+	#end
+	#if($column.attrname != "id"
+    &&$column.attrname != "delFlag"
+    &&$column.attrname != "createdBy"
+    &&$column.attrname != "createdTime"
+    &&$column.attrname != "updatedBy"
+    &&$column.attrname != "updatedTime"
+    &&$column.attrname != "status")
+	/**
+	 * $column.comments
+	 */
+	private $column.attrType $column.attrname;
+	#end
+    #if($column.attrname == "status")
+    /**
+     * 状态
+     */
+    private StatusEnum status;
+    #end
+#end
+
+    @Override
+    public boolean sameIdentityAs(${className} other) {
+		return other != null && this.id.sameValueAs(other.id);
+    }
+
+	/**
+	 * 禁用
+	 */
+	public void disable(){
+		StatusEnum status = this.status == StatusEnum.DISABLE? StatusEnum.ENABLE:StatusEnum.DISABLE;
+		this.status = status;
+	}
+
+}

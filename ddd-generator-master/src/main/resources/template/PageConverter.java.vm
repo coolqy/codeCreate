@@ -1,0 +1,19 @@
+package  ${package}.${moduleName}.infrastructure.persistence.mybatis.converter;
+
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import  ${package}.${moduleName}.domain.shared.Page;
+
+/**
+ * 分页转换类
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+public class PageConverter {
+
+    public static Page toPage(IPage iPage) {
+        Page page = new Page(iPage.getRecords(), iPage.getTotal(), iPage.getSize(), iPage.getCurrent());
+        return page;
+    }
+}

@@ -1,0 +1,11 @@
+package  ${package}.${moduleName}.infrastructure.util.validator.group;
+
+
+/**
+ * 新增数据 Grou
+ *
+ * @author ${author}
+ * @date ${datetime}
+ */
+public interface AddGroup {
+}

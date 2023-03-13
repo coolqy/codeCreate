@@ -1,0 +1,25 @@
+package ${package}.${moduleName}.interfaces.web.command;
+
+
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.util.List;
+
+@Data
+@ApiModel(value = "${comments}主子表", description = "${comments}主子表")
+public class ${className}AllCommand {
+
+	@ApiModelProperty(value = "${comments}")
+	private ${className}Command ${classname};
+
+	#foreach ($sub in $subList)
+		/**
+		 * $sub.comments
+		 */
+		@ApiModelProperty(value = "$sub.comments")
+		private List<${sub.className}Command> ${sub.classname};
+	#end
+
+}

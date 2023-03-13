@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>创建工程</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="stylesheet" href="css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/font-awesome.min.css">
+    <link rel="stylesheet" href="plugins/jqgrid/ui.jqgrid-bootstrap.css">
+    <link rel="stylesheet" href="css/main.css">
+    <script src="libs/jquery.min.js"></script>
+    <script src="plugins/layer/layer.js"></script>
+    <script src="libs/bootstrap.min.js"></script>
+    <script src="libs/vue.min.js"></script>
+    <script src="plugins/jqgrid/grid.locale-cn.js"></script>
+    <script src="plugins/jqgrid/jquery.jqGrid.min.js"></script>
+    <script src="js/common.js"></script>
+    <link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<div id="rrapp">
+    <div class="el-card box-card is-hover-shadow" style="margin-top: 20px; border-radius: 10px;">
+
+        <div class="el-card__body" style="padding: 15px;">
+            <form :model="form">
+                <div style="width: 600px">
+                    <div class="el-form-item">
+                        <label class="el-form-item__label" style="width: 120px;">工程GroupId</label>
+                        <div class="el-form-item__content" style="margin-left: 120px;">
+                            <div class="el-input">
+                                <input type="text" autocomplete="off" v-model="form.groupId"
+                                       placeholder="com.aimin.demo" class="el-input__inner">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="el-form-item">
+                        <label class="el-form-item__label" style="width: 120px;">工程Artifact</label>
+                        <div class="el-form-item__content" style="margin-left: 120px;">
+                            <div class="el-input">
+                                <input type="text" autocomplete="off" v-model="form.artifact" placeholder="demo"
+                                       class="el-input__inner">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="el-form-item">
+                        <label class="el-form-item__label" style="width: 120px;">工程版本</label>
+                        <div class="el-form-item__content" style="margin-left: 120px;">
+                            <div class="el-input">
+                                <input type="text" autocomplete="off" v-model="form.version"
+                                       placeholder="1.0.0-SNAPSHOT" class="el-input__inner">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="el-form-item">
+                        <label class="el-form-item__label" style="width: 120px;">工程包名</label>
+                        <div class="el-form-item__content" style="margin-left: 120px;">
+                            <div class="el-input">
+                                <input type="text" autocomplete="off" v-model="form.packageName" placeholder="com.aimin"
+                                       class="el-input__inner">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="el-form-item">
+                        <label class="el-form-item__label" style="width: 120px;">springboot版本</label>
+                        <div class="el-form-item__content" style="margin-left: 120px;">
+                            <div class="el-input">
+                                <input type="text" autocomplete="off" v-model="form.springBootVersion"
+                                       placeholder="2.5.6" class="el-input__inner">
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="el-button el-button--primary" @click="create"><span>创建</span></button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+</div>
+
+<script type="application/javascript">
+    document.write('<script src="js/generator.js?v=1.0?t=' + new Date().getTime() + '"><\/script>');
+</script>
+</body>
+<style>
+
+</style>
+</html>

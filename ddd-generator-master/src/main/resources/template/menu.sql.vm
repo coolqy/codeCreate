@@ -1,0 +1,30 @@
+set @parentId = REPLACE(unix_timestamp(current_timestamp(3)),'.','');
+
+INSERT INTO `sys_permission`
+VALUES (@parentId, '1362320253140361218', '${comments}', '1', '1', NULL, 'admin', 0, '${moduleName}/${pathName}', '0', NULL, '0',
+        'system', '2021-02-18 16:39:46', 'system', '2021-02-18 17:07:47');
+
+INSERT INTO `sys_permission`
+VALUES (@parentId+1, @parentId, '${comments}分页查询', '2', '1', '${moduleName}:${pathName}:list', NULL, 0, NULL, '0',
+        NULL,
+        '0', '超级管理员', '2021-02-24 13:23:53', NULL, NULL);
+INSERT INTO `sys_permission`
+VALUES (@parentId+2, @parentId, '${comments}信息', '2', '1', '${moduleName}:${pathName}:info', NULL, 1, NULL, '0', NULL,
+        '0',
+        '超级管理员', '2021-02-24 13:24:19', NULL, NULL);
+INSERT INTO `sys_permission`
+VALUES (@parentId+3, @parentId, '修改${comments}', '2', '1', '${moduleName}:${pathName}:update', NULL, 2, NULL, '0',
+        NULL,
+        '0', '超级管理员', '2021-02-24 13:25:42', '超级管理员', '2021-02-24 13:31:17');
+INSERT INTO `sys_permission`
+VALUES (@parentId+4, @parentId, '删除${comments}', '2', '1', '${moduleName}:${pathName}:delete', NULL, 3, NULL, '0',
+        NULL,
+        '0', '超级管理员', '2021-02-24 13:26:03', NULL, NULL);
+INSERT INTO `sys_permission`
+VALUES (@parentId+5, @parentId, '${comments}保存', '2', '1', '${moduleName}:${pathName}:save', '', 4, NULL, '0', NULL,
+        '0',
+        '超级管理员', '2021-02-26 23:00:16', '超级管理员', '2021-02-26 23:01:07');
+INSERT INTO `sys_permission`
+VALUES (@parentId + 6, @parentId, '禁用${comments}', '2', '1', '${moduleName}:${pathName}:disable', '', 5, NULL, '0', NULL,
+        '0',
+        '超级管理员', '2021-02-26 23:00:16', '超级管理员', '2021-02-26 23:01:07');

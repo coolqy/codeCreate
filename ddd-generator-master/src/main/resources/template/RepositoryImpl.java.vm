@@ -1,0 +1,64 @@
+package ${package}.${moduleName}.infrastructure.persistence.mybatis.repository.impl;
+
+import com.baomidou.mybatisplus.extension.service.IService;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import ${package}.${moduleName}.domain.model.entity.${className};
+import ${package}.${moduleName}.domain.model.types.${className}Id;
+import ${package}.${moduleName}.domain.repository.${className}Repository;
+import ${package}.${moduleName}.infrastructure.persistence.mybatis.converter.${className}Converter;
+import ${package}.${moduleName}.infrastructure.persistence.mybatis.entity.${className}DO;
+import ${package}.${moduleName}.infrastructure.persistence.mybatis.mapper.${className}Mapper;
+import org.springframework.stereotype.Repository;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * ${comments}Repository实现类
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+@Repository
+public class ${className}RepositoryImpl extends ServiceImpl<${className}Mapper, ${className}DO> implements ${className}Repository, IService<${className}DO> {
+
+	@Override
+	public ${className} find(${className}Id id) {
+		Map<String, Object> params = new HashMap<>();
+		params.put("id", id.getId());
+		${className}DO ${pathName}DO = baseMapper.queryEntity(params);
+		if (${pathName}DO == null) {
+			return null;
+		}
+		${className} ${pathName} = ${className}Converter.to${className}(${pathName}DO);
+		${pathName}.setId(new ${className}Id(${pathName}DO.getId()));
+		return ${pathName};
+	}
+
+	@Override
+	public void store(${className} ${pathName}) {
+		${className}DO ${pathName}DO = ${className}Converter.from${className}(${pathName});
+		this.saveOrUpdate(${pathName}DO);
+		${pathName}.setId(new ${className}Id(${pathName}DO.getId()));
+	}
+
+	@Override
+	public void update(${className} ${pathName}) {
+		${className}DO ${pathName}DO = ${className}Converter.from${className}(${pathName});
+		this.saveOrUpdate(${pathName}DO);
+		${pathName}.setId(new ${className}Id(${pathName}DO.getId()));
+	}
+
+	@Override
+	public void delete(List<${className}Id> ids) {
+		List<String> tempIds = new ArrayList<>();
+		ids.forEach(tempId -> {
+			tempIds.add(tempId.getId());
+		});
+		this.removeByIds(tempIds);
+	}
+
+}

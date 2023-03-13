@@ -1,0 +1,120 @@
+package ${package}.${moduleName}.interfaces.web;
+
+
+import ${package}.${moduleName}.domain.shared.Page;
+import ${package}.common.Result;
+import ${package}.${moduleName}.infrastructure.util.validator.ValidatorUtils;
+import ${package}.${moduleName}.infrastructure.util.validator.group.AddGroup;
+import ${package}.${moduleName}.infrastructure.util.validator.group.UpdateGroup;
+import ${package}.common.AbstractController;
+import ${package}.${moduleName}.interfaces.facade.${className}ServiceFacade;
+import ${package}.${moduleName}.interfaces.facade.dto.${className}DTO;
+import ${package}.${moduleName}.interfaces.web.command.${className}Command;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
+#if(${isFirst})
+import ${package}.${moduleName}.interfaces.facade.${className}AllServiceFacade;
+import ${package}.${moduleName}.interfaces.web.command.${className}AllCommand;
+#end
+import java.util.Arrays;
+import java.util.Map;
+
+
+/**
+ * ${comments}Controller
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+@Api(tags = " ${comments}管理")
+@RestController
+@RequestMapping("/${pathName}")
+public class ${className}Controller extends AbstractController {
+
+    @Autowired
+    private ${className}ServiceFacade ${pathName}ServiceFacade;
+
+    #if(${isFirst})
+
+    @Autowired
+    private ${className}AllServiceFacade ${pathName}AllServiceFacade;
+    /**
+     * 全量保存
+     */
+    @RequestMapping("/saveall")
+    public Result saveall(@RequestBody ${className}AllCommand ${pathName}AllCommand) {
+        ValidatorUtils.validateEntity(${pathName}AllCommand, AddGroup.class);
+        ${pathName}AllServiceFacade.saveAll(${pathName}AllCommand);
+        return Result.ok();
+    }
+    #end
+
+    /**
+     * ${comments}分页查询
+     */
+    @ApiOperation("${comments}分页查询")
+    @GetMapping("/list")
+    public Result list(@RequestParam Map<String, Object> params) {
+        Page page = ${pathName}ServiceFacade.queryPage(params);
+        return Result.ok().put(RESULT_PAGE, page);
+    }
+
+    /**
+     * ${comments}信息
+     */
+    @ApiOperation("${comments}信息")
+    @GetMapping("/info/{id}")
+    public Result info(@PathVariable("id") String id) {
+        return Result.ok().put("${pathName}", ${pathName}ServiceFacade.find(id));
+    }
+
+    /**
+     * 保存${comments}
+     */
+    @ApiOperation("保存${comments}")
+    @PostMapping("/save")
+    public Result save(@RequestBody ${className}Command ${pathName}Command) {
+        ValidatorUtils.validateEntity(${pathName}Command, AddGroup.class);
+        ${className}DTO ${pathName}DTO = new ${className}DTO();
+        BeanUtils.copyProperties(${pathName}Command, ${pathName}DTO);
+        ${pathName}ServiceFacade.save(${pathName}DTO);
+        return Result.ok();
+    }
+
+    /**
+     * 修改${comments}
+     */
+    @ApiOperation("修改${comments}")
+    @PostMapping("/update")
+    public Result update(@RequestBody ${className}Command ${pathName}Command) {
+        ValidatorUtils.validateEntity(${pathName}Command, UpdateGroup.class);
+        ${className}DTO ${pathName}DTO = new ${className}DTO();
+        BeanUtils.copyProperties(${pathName}Command, ${pathName}DTO);
+        ${pathName}ServiceFacade.update(${pathName}DTO);
+        return Result.ok();
+    }
+
+    /**
+     * 删除${comments}
+     */
+    @ApiOperation("删除${comments}")
+    @PostMapping("/delete")
+    public Result delete(@RequestBody String[] ids) {
+        ${pathName}ServiceFacade.deleteBatch(Arrays.asList(ids));
+        return Result.ok();
+    }
+
+    /**
+     * 禁用${comments}
+     */
+    @ApiOperation("禁用${comments}")
+    @PostMapping("/disable/{id}")
+    public Result disable(@PathVariable("id") String id) {
+        ${pathName}ServiceFacade.disable(id);
+        return Result.ok();
+    }
+}

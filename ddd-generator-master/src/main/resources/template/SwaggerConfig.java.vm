@@ -1,0 +1,46 @@
+package ${package}.common.config;
+
+
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import springfox.documentation.builders.ApiInfoBuilder;
+import springfox.documentation.builders.PathSelectors;
+import springfox.documentation.builders.RequestHandlerSelectors;
+import springfox.documentation.service.ApiInfo;
+import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.annotations.EnableSwagger2;
+
+/**
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ * @description:
+ **/
+@Configuration
+@EnableSwagger2
+public class SwaggerConfig {
+    @Bean
+    public Docket docket() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("${artifact}")
+                .apiInfo(apiInfo())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("${package}.boot.interfaces.web"))
+                .paths(PathSelectors.any())
+                .build()
+                .enableUrlTemplating(false);
+    }
+
+    private ApiInfo apiInfo() {
+        return new ApiInfoBuilder()
+                .title("${artifact}")
+                .description("API接口文档")
+                .termsOfServiceUrl("http://springfox.io")
+                .license("Apache License Version 2.0")
+                .licenseUrl("https://github.com/springfox/springfox/blob/master/LICENSE")
+                .version("1.0")
+                .build();
+    }
+
+}

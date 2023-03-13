@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <groupId>org.springframework.boot</groupId>
+        <version>${springBootVersion}</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+
+    <groupId>${groupId}</groupId>
+    <artifactId>${artifact}</artifactId>
+    <version>${version}</version>
+    <name>${artifact}</name>
+    <packaging>pom</packaging>
+
+    <description>一款基于DDD开发模式的工程框架及代码生成器</description>
+
+    <developers>
+        <developer>
+            <id>ddd</id>
+            <name>ddd-code-generator</name>
+            <organization>aiminjt</organization>
+            <organizationUrl>https://gitee.com/amjt/ddd-generator.git</organizationUrl>
+        </developer>
+    </developers>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <java.version>1.8</java.version>
+        <mybatisplus.version>3.4.2</mybatisplus.version>
+        <mybatis.version>3.5.6</mybatis.version>
+        <mysql.version>8.0.17</mysql.version>
+        <druid.version>1.1.16</druid.version>
+        <lombok.version>1.18.16</lombok.version>
+        <commons.lang.version>2.6</commons.lang.version>
+    </properties>
+
+    <modules>
+        <module>${artifact}-application</module>
+        <module>${artifact}-domain</module>
+        <module>${artifact}-infrastructure</module>
+        <module>${artifact}-interfaces</module>
+        <module>${artifact}-starter</module>
+    </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>${groupId}</groupId>
+                <artifactId>${artifact}-application</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${groupId}</groupId>
+                <artifactId>${artifact}-domain</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${groupId}</groupId>
+                <artifactId>${artifact}-infrastructure</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>${groupId}</groupId>
+                <artifactId>${artifact}-interfaces</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+    <repositories>
+        <repository>
+            <id>nexus-aliyun</id>
+            <name>nexus-aliyun</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+            <releases>
+                <enabled>true</enabled>
+            </releases>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-jar-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

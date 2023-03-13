@@ -1,0 +1,39 @@
+package ${package}.${moduleName}.domain.model.types;
+
+import ${package}.${moduleName}.domain.shared.ValueObject;
+import lombok.Data;
+import org.apache.commons.lang3.StringUtils;
+
+/**
+ * ${comments}ID
+ *
+ * @author ${author}
+ * @email ${email}
+ * @date ${datetime}
+ */
+@Data
+public class ${className}Id implements ValueObject<${className}Id> {
+
+	private String id;
+
+	public ${className}Id(final String id) {
+		if(StringUtils.isEmpty(id)) {
+			throw new IllegalArgumentException("${comments}id不能为空");
+		}
+		this.id = id;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	@Override
+	public boolean sameValueAs(${className}Id other) {
+		return other != null && this.id.equals(other.id);
+	}
+
+	@Override
+	public String toString() {
+		return id;
+	}
+}
